@@ -16,7 +16,6 @@ const ChatLayout = ({ children }) => {
 
     const isUserOnline = (userId) => onlineUsers[userId];
 
-    console.log(page.props);
 
     useEffect(() => {
         setSortedConversations(
