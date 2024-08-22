@@ -44,6 +44,7 @@ const ChatLayout = ({ children }) => {
 
     useEffect(() => {
         setLocalConversations(conversations);
+        console.log(typeof(conversations));
     }, [conversations]);
 
     useEffect(() => {

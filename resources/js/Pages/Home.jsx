@@ -6,19 +6,50 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ConversationHeader from "@/Components/App/ConversationHeader";
 import MessageItem from "@/Components/App/MessageItem";
 import MessageInput from "@/Components/App/MessageInput";
+import { useEventBus } from "@/EventBus";
 
 const Home = ({ messages = null, selectedConversation = null }) => {
     const [localMessages, setLocalMessages] = useState([]);
     const messagesCrtRef = useRef(null);
+    const { on } = useEventBus();
+
+    const messageCreated = (message) => {
+        if (
+            selectedConversation &&
+            selectedConversation.is_group &&
+            selectedConversation.id == message.group_id
+        ) {
+            setLocalMessages((prevMessages) => {
+                return [...prevMessages, message];
+            });
+        }
+        if (
+            (selectedConversation &&
+                selectedConversation.is_user &&
+                selectedConversation.id == message.sender_id) ||
+            selectedConversation.id == message.receiver_id
+        ) {
+            setLocalMessages((prevMessages) => {
+                return [...prevMessages, message];
+            });
+        }
+    };
 
     useEffect(() => {
         setLocalMessages(messages ? messages.data.reverse() : []);
     }, [messages]);
 
     useEffect(() => {
-        setTimeout(()=>{
-            messagesCrtRef.current.scrollTop = messagesCrtRef.current?.scrollHeight;
-        },10)
+        setTimeout(() => {
+            if (messagesCrtRef.current) {
+                messagesCrtRef.current.scrollTop =
+                    messagesCrtRef.current?.scrollHeight;
+            }
+        }, 10);
+        const offCreated = on("message.created", messageCreated);
+        return () => {
+            offCreated();
+        };
     }, [selectedConversation]);
     return (
         <>

@@ -18,8 +18,8 @@ export default {
             },
         },
         screens: {
-            xs: "540px",
-            sm: "640px",
+            xs: "420px",
+            sm: "680px",
             md: "768px",
             lg: "1024px",
             xl: "1280px",
