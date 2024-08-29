@@ -68,6 +68,7 @@ class MessageController extends Controller
 
         $files = $data['attachments'] ?? null;
         $message = Message::create($data);
+
         $attachments = [];
         if ($files) {
             foreach ($files as $file) {

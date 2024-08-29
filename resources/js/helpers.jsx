@@ -25,7 +25,7 @@ export const formatMessageDateLong = (date) => {
     }
 };
 
-const formatMessageDateShort = (date) => {
+export const formatMessageDateShort = (date) => {
     const now = new Date();
     const inputDate = new Date(date);
     if (isToday(inputDate)) {

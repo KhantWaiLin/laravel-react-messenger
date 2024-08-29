@@ -26,13 +26,14 @@ export default function Authenticated({ header, children }) {
                 ]
                     .sort((a, b) => a - b)
                     .join("-")}`;
+            }else if(conversation.is_group){
+                channel = `message.group.${conversation.id}`;
             }
             Echo.private(channel)
                 .error((error) => {
                     console.error(error);
                 })
                 .listen("SocketMessage", (e) => {
-                    console.log(e);
                     const message = e.message;
                     emit("message.created", message);
                     if (message.sender_id === user.id) {
@@ -52,7 +53,7 @@ export default function Authenticated({ header, children }) {
                 });
         });
         return () => {
-            conversations.foreach((conversation) => {
+            conversations?.foreach((conversation) => {
                 let message = `message.group.${conversation.id}`;
                 if (conversation.is_user) {
                     message = `message.user.${[

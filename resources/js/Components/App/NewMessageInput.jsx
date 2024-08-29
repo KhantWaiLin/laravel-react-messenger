@@ -20,7 +20,6 @@ const NewMessageInput = ({ value, onChange, onSend }) => {
     const adjustHeight = () => {
         setTimeout(() => {
             input.current.style.height = "auto";
-            console.log(input.current.style.height);
             input.current.style.height = input.current.scrollHeight + 1 + "px";
         }, 100);
     };

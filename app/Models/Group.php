@@ -59,15 +59,22 @@ class Group extends Model
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'last_message' => $this->last_message,
-            'last_message_date' => $this->last_message_date,
+            'last_message_date' => $this->last_message_date ? $this->last_message_date . 'UTC' : null,
         ];
     }
 
     public static function updateGroupWithMessage($groupId, $message)
     {
-        return self::updateOrCreate([
-            'id' => $groupId,
-            'last_message_id' => $message->id
-        ]);
+        $group = self::find($groupId);
+        if(!$group) {
+            return;
+        }else{
+            return Group::updateOrCreate([
+                'name' => $group->name,
+                'id' => $groupId,
+                'last_message_id' => $message->id,
+                'owner_id' => $group->owner_id,
+            ]);
+        }
     }
 }

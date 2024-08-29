@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import {
     PaperClipIcon,
     PhotoIcon,
@@ -8,13 +8,25 @@ import {
 } from "@heroicons/react/24/solid";
 import NewMessageInput from "./NewMessageInput";
 import axios from "axios";
+import EmojiPicker from "emoji-picker-react";
+import {
+    Popover,
+    PopoverButton,
+    PopoverPanel,
+    Transition,
+} from "@headlessui/react";
 
 const MessageInput = ({ conversation = null }) => {
     const [newMessage, setNewMessage] = useState("");
     const [inputErrorMessage, setInputErrorMessage] = useState("");
     const [messageSending, setMessageSending] = useState(false);
+    const [chosenFiles, setChosenFiles] = useState([]);
+    const [uploadProgress, setUploadProgress] = useState(0);
 
     const onSendClick = () => {
+        if (messageSending) {
+            return;
+        }
         if (newMessage.trim() === "") {
             setInputErrorMessage(
                 "Please provide a message or upload attachments"
@@ -32,6 +44,25 @@ const MessageInput = ({ conversation = null }) => {
             formData.append("group_id", conversation.id);
         }
         setMessageSending(true);
+        sendRequest(formData);
+    };
+
+    const onLikeClick = () => {
+        if (messageSending) {
+            return;
+        }
+        const data = {
+            message: "👍",
+        };
+        if (conversation.is_user) {
+            data["receiver_id"] = conversation.id;
+        } else if (conversation.is_group) {
+            data["group_id"] = conversation.id;
+        }
+        axios.post(route("message.store"), data);
+    };
+
+    const sendRequest = (formData) => {
         axios
             .post(route("message.store"), formData, {
                 onUploadProgress: (progressEvent) => {
@@ -81,6 +112,7 @@ const MessageInput = ({ conversation = null }) => {
                     <button
                         onClick={onSendClick}
                         className="btn btn-info rounded-l-none"
+                        disabled={messageSending}
                     >
                         {messageSending && (
                             <span className="loading loading-spinner loading-xs"></span>
@@ -92,10 +124,24 @@ const MessageInput = ({ conversation = null }) => {
                 {inputErrorMessage && <p className="text-xs text-red-400"></p>}
             </div>
             <div className="order-3 xs:order-3 p-2 flex">
-                <button className="p-1 text-gray-400 hover:text-gray-300">
-                    <FaceSmileIcon className="w-6 h-6" />
-                </button>
-                <button className="p-1 text-gray-400 hover:text-gray-300">
+                <Popover className="relative">
+                    <PopoverButton className="p-1 text-gray-400 hover:text-gray-300">
+                        <FaceSmileIcon className="w-6 h-6" />
+                    </PopoverButton>
+                    <PopoverPanel className="absolute z-10 right-0 bottom-full">
+                        <EmojiPicker
+                            theme="dark"
+                            onEmojiClick={(emojiData) => {
+                                setNewMessage(newMessage + emojiData.emoji);
+                            }}
+                            open={true}
+                        />
+                    </PopoverPanel>
+                </Popover>
+                <button
+                    onClick={onLikeClick}
+                    className="p-1 text-gray-400 hover:text-gray-300"
+                >
                     <HandThumbUpIcon className="w-6 h-6" />
                 </button>
             </div>
