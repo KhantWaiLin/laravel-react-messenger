@@ -65,25 +65,37 @@ export const isYesterday = (date) => {
 };
 
 export const isImage = (attachment) => {
-    const mime = attachment.mime || attachment.type;
-    mime = mime.split("/");
-    return mime[0].toLowerCase() === "image";
+    let mime = attachment.mime || attachment.type;
+    mime = mime?.split("/");
+    if (mime === undefined) {
+        return false;
+    }
+    return mime[0]?.toLowerCase() === "image";
 };
 
 export const isVideo = (attachment) => {
-    const mime = attachment.mime || attachment.type;
-    mime = mime.split("/");
+    let mime = attachment.mime || attachment.type;
+    mime = mime?.split("/");
+    if (mime === undefined) {
+        return false;
+    }
     return mime[0].toLowerCase() === "video";
 };
 
 export const isAudio = (attachment) => {
-    const mime = attachment.mime || attachment.type;
-    mime = mime.split("/");
+    let mime = attachment.mime || attachment.type;
+    mime = mime?.split("/");
+    if (mime === undefined) {
+        return false;
+    }
     return mime[0].toLowerCase() === "audio";
 };
 
 export const isPDF = (attachment) => {
-    const mime = attachment.mime || attachment.type;
+    let mime = attachment.mime || attachment.type;
+    if (mime === undefined) {
+        return false;
+    }
     return mime === "application/pdf";
 };
 
